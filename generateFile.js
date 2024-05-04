@@ -1,8 +1,10 @@
 const fs = require('fs');
 const path = require('path');
 const axios = require('axios');
+const util = require("util");
 
 async function processProjectData(urls) {
+    urlList = []
     for (const url of urls) {
         try {
             let projectName = getProjectName(url)
@@ -26,23 +28,27 @@ async function processProjectData(urls) {
             // 生成 metadata 文件
             const metadata = {
                 ...response.data,
+                name:projectName,
                 logo: 'https://raw.githubusercontent.com/metaverseFoundation/metaData/main/'+projectName+'/logo.png'
             };
             fs.writeFileSync(path.join(directoryPath, 'metadata.json'), JSON.stringify(metadata, null, 2));
 
             // 打印 metadata 文件的链接
-            console.log('https://raw.githubusercontent.com/metaverseFoundation/metaData/main/'+projectName+'/metadata.json');
+            let newUrl = 'https://raw.githubusercontent.com/metaverseFoundation/metaData/main/'+projectName+'/metadata.json'
+            urlList.push(newUrl)
+            // console.log(newUrl);
         } catch (error) {
             console.error('Error:', error);
         }
     }
+    console.log(util.inspect(urlList,{maxArrayLength:null}))
 }
 
 function getProjectName(url) {
     const pathParts = url.split('/');
     const fileName = pathParts[pathParts.length - 1];
     const fileNameParts = fileName.split('.');
-    return fileNameParts[0]
+    return fileNameParts[0]+'4'
 }
 
 
